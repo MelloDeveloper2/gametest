@@ -1,39 +1,42 @@
-// HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Game</title>
-    <style>
-        canvas { border: 1px solid black; }
-    </style>
-</head>
-<body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="chatBox"></div>
-    <script src="game.js"></script>
-</body>
-</html>
-
-// JavaScript (game.js)
-const canvas = document.getElementById('gameCanvas');
+// Create a canvas element
+const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
+document.body.appendChild(canvas);
+
+// Set canvas size
+canvas.width = 800;
+canvas.height = 600;
+
+// Square properties
 let squareX = 50;
 let squareY = 50;
+const squareSize = 50;
 
+// Draw square function
 function drawSquare() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'blue';
-    ctx.fillRect(squareX, squareY, 50, 50);
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(squareX, squareY, squareSize, squareSize);
 }
 
+// Move square on click
 canvas.addEventListener('click', (event) => {
-    squareX = event.clientX - canvas.offsetLeft;
-    squareY = event.clientY - canvas.offsetTop;
-    drawSquare();
+  squareX = event.offsetX - squareSize / 2;
+  squareY = event.offsetY - squareSize / 2;
+  drawSquare();
 });
 
-const chatBox = document.getElementById('chatBox');
-chatBox.innerText = 'Prototype 0.1';
+// Chat system
+const chatMessages = document.createElement('div');
+document.body.appendChild(chatMessages);
 
+function sendMessage(message) {
+  const messageElement = document.createElement('p');
+  messageElement.textContent = message;
+  chatMessages.appendChild(messageElement);
+}
+
+// Example usage
+sendMessage('Welcome to the game! Click to move the square.');
+
+// Initial square draw
+drawSquare();
