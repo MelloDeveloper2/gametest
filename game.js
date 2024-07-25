@@ -18,8 +18,9 @@ function drawSquare() {
   ctx.fillRect(squareX, squareY, squareSize, squareSize);
 }
 
-// Move square on click
+// Move square on click without duplication
 canvas.addEventListener('click', (event) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   squareX = event.offsetX - squareSize / 2;
   squareY = event.offsetY - squareSize / 2;
   drawSquare();
