@@ -18,9 +18,8 @@ function drawSquare() {
   ctx.fillRect(squareX, squareY, squareSize, squareSize);
 }
 
-// Move square on click without duplication
+// Move square on click
 canvas.addEventListener('click', (event) => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   squareX = event.offsetX - squareSize / 2;
   squareY = event.offsetY - squareSize / 2;
   drawSquare();
@@ -41,3 +40,5 @@ sendMessage('Welcome to the game! Click to move the square.');
 
 // Initial square draw
 drawSquare();
+
+// Updates for a chat system button
