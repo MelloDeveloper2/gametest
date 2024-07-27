@@ -18,10 +18,25 @@ function drawSquare() {
   ctx.fillRect(squareX, squareY, squareSize, squareSize);
 }
 
-// Move square on click
-canvas.addEventListener('click', (event) => {
-  squareX = event.offsetX - squareSize / 2;
-  squareY = event.offsetY - squareSize / 2;
+// Move square with arrow keys
+document.addEventListener('keydown', (event) => {
+  switch (event.key) {
+    case 'ArrowUp':
+      squareY -= 10;
+      break;
+    case 'ArrowDown':
+      squareY += 10;
+      break;
+    case 'ArrowLeft':
+      squareX -= 10;
+      break;
+    case 'ArrowRight':
+      squareX += 10;
+      break;
+    default:
+      break;
+  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawSquare();
 });
 
@@ -36,9 +51,7 @@ function sendMessage(message) {
 }
 
 // Example usage
-sendMessage('Welcome to the game! Click to move the square.');
+sendMessage('Welcome to the game! Use arrow keys to move the square.');
 
 // Initial square draw
 drawSquare();
-
-// Updates for a chat system button
