@@ -5,15 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club Penguin-Style Game</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"></script>
     <style>
         body {
             margin: 0;
             overflow: hidden;
         }
+        #chat-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #chat-box {
+            width: 100%;
+            height: 150px;
+            overflow-y: scroll;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 5px;
+        }
+        #chat-input {
+            width: 80%;
+            padding: 5px;
+        }
+        #send-button {
+            width: 18%;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const config = {
             type: Phaser.AUTO,
             width: 800,
@@ -36,21 +79,20 @@
 
         let player;
         let cursors;
+        let chatBox;
+        let chatInput;
+        let sendButton;
 
         function preload() {
-            // Load background and character sprite
             this.load.image('background', 'path/to/your/background.png');
             this.load.spritesheet('penguin', 'path/to/your/penguin_sprite.png', { frameWidth: 48, frameHeight: 48 });
         }
 
         function create() {
-            // Add background image
             this.add.image(400, 300, 'background');
 
-            // Create player character
             player = this.physics.add.sprite(400, 300, 'penguin');
 
-            // Player animations
             this.anims.create({
                 key: 'left',
                 frames: this.anims.generateFrameNumbers('penguin', { start: 0, end: 3 }),
@@ -79,15 +121,52 @@
                 repeat: -1
             });
 
-            // Enable keyboard input
             cursors = this.input.keyboard.createCursorKeys();
+
+            // Set up chat UI elements
+            chatBox = document.createElement('div');
+            chatBox.id = 'chat-box';
+            document.body.appendChild(chatBox);
+
+            chatInput = document.createElement('input');
+            chatInput.id = 'chat-input';
+            chatInput.type = 'text';
+            chatInput.placeholder = 'Type a message...';
+            document.body.appendChild(chatInput);
+
+            sendButton = document.createElement('button');
+            sendButton.id = 'send-button';
+            sendButton.innerText = 'Send';
+            document.body.appendChild(sendButton);
+
+            // Load chat messages from Firebase
+            const messagesRef = database.ref('messages');
+            messagesRef.on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                chatBox.innerHTML += `<p>${message}</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
+            });
+
+            // Send message to Firebase
+            sendButton.onclick = function () {
+                const message = chatInput.value;
+                if (message.trim() !== '') {
+                    messagesRef.push(message);
+                    chatInput.value = ''; // Clear input after sending
+                }
+            };
+
+            // Optional: Send message with Enter key
+            chatInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    sendButton.click();
+                }
+            });
         }
 
         function update() {
-            // Reset velocity
             player.setVelocity(0);
 
-            // Character movement
             if (cursors.left.isDown) {
                 player.setVelocityX(-160);
                 player.anims.play('left', true);
