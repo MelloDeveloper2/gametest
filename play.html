@@ -3,186 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Penguin-Style Game</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"></script>
+    <title>Play Game</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             margin: 0;
+            padding: 0;
             overflow: hidden;
+            background-color: #87CEEB; /* Sky blue background */
         }
-        #chat-container {
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background: #fff;
+            border: 2px solid #000;
+        }
+        .status-bar {
             position: absolute;
-            bottom: 0;
+            top: 0;
+            left: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
             padding: 10px;
-            box-sizing: border-box;
-        }
-        #chat-box {
-            width: 100%;
-            height: 150px;
-            overflow-y: scroll;
-            background-color: #333;
-            color: white;
-            border: 1px solid #555;
-            padding: 5px;
-        }
-        #chat-input {
-            width: 80%;
-            padding: 5px;
-        }
-        #send-button {
-            width: 18%;
-            padding: 5px;
+            text-align: center;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        const config = {
-            type: Phaser.AUTO,
-            width: 800,
-            height: 600,
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 0 },
-                    debug: false
-                }
-            },
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            }
-        };
-
-        const game = new Phaser.Game(config);
-
-        let player;
-        let cursors;
-        let chatBox;
-        let chatInput;
-        let sendButton;
-
-        function preload() {
-            this.load.image('background', 'path/to/your/background.png');
-            this.load.spritesheet('penguin', 'path/to/your/penguin_sprite.png', { frameWidth: 48, frameHeight: 48 });
-        }
-
-        function create() {
-            this.add.image(400, 300, 'background');
-
-            player = this.physics.add.sprite(400, 300, 'penguin');
-
-            this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('penguin', { start: 0, end: 3 }),
-                frameRate: 10,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'right',
-                frames: this.anims.generateFrameNumbers('penguin', { start: 4, end: 7 }),
-                frameRate: 10,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'up',
-                frames: this.anims.generateFrameNumbers('penguin', { start: 8, end: 11 }),
-                frameRate: 10,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'down',
-                frames: this.anims.generateFrameNumbers('penguin', { start: 12, end: 15 }),
-                frameRate: 10,
-                repeat: -1
-            });
-
-            cursors = this.input.keyboard.createCursorKeys();
-
-            // Set up chat UI elements
-            chatBox = document.createElement('div');
-            chatBox.id = 'chat-box';
-            document.body.appendChild(chatBox);
-
-            chatInput = document.createElement('input');
-            chatInput.id = 'chat-input';
-            chatInput.type = 'text';
-            chatInput.placeholder = 'Type a message...';
-            document.body.appendChild(chatInput);
-
-            sendButton = document.createElement('button');
-            sendButton.id = 'send-button';
-            sendButton.innerText = 'Send';
-            document.body.appendChild(sendButton);
-
-            // Load chat messages from Firebase
-            const messagesRef = database.ref('messages');
-            messagesRef.on('child_added', (snapshot) => {
-                const message = snapshot.val();
-                chatBox.innerHTML += `<p>${message}</p>`;
-                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
-            });
-
-            // Send message to Firebase
-            sendButton.onclick = function () {
-                const message = chatInput.value;
-                if (message.trim() !== '') {
-                    messagesRef.push(message);
-                    chatInput.value = ''; // Clear input after sending
-                }
-            };
-
-            // Optional: Send message with Enter key
-            chatInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    sendButton.click();
-                }
-            });
-        }
-
-        function update() {
-            player.setVelocity(0);
-
-            if (cursors.left.isDown) {
-                player.setVelocityX(-160);
-                player.anims.play('left', true);
-            } else if (cursors.right.isDown) {
-                player.setVelocityX(160);
-                player.anims.play('right', true);
-            } else if (cursors.up.isDown) {
-                player.setVelocityY(-160);
-                player.anims.play('up', true);
-            } else if (cursors.down.isDown) {
-                player.setVelocityY(160);
-                player.anims.play('down', true);
-            } else {
-                player.anims.stop();
-            }
-        }
-    </script>
+    <div class="status-bar">
+        <span id="status">Connecting...</span>
+        <span id="playerCount">Players: 0</span>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
