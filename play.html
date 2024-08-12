@@ -5,31 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play Game</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #87CEEB; /* Sky blue background */
-        }
-        #gameCanvas {
-            display: block;
-            margin: 0 auto;
-            background: #fff;
-            border: 2px solid #000;
-        }
-        .status-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-            font-size: 16px;
-        }
-    </style>
 </head>
 <body>
     <div class="status-bar">
@@ -38,6 +13,7 @@
     </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     
+    <!-- Include Socket.io client library -->
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="game.js"></script>
 </body>
